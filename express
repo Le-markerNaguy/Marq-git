@@ -1,0 +1,22 @@
+require('dotenv').config();
+const express = require('express');
+const { Client } = require('pg');
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+});
+
+client.connect()
+  .then(() => console.log('Connecté à la base de données PostgreSQL !'))
+  .catch(err => console.error('Erreur de connexion :', err));
+
+app.get('/', (req, res) => {
+  res.send('Bonjour le monde !');
+});
+
+app.listen(port, () => {
+  console.log(`Application en écoute sur le port ${port}`);
+});

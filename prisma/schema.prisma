@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      ="file:./dev.db"
+}
+model Admin {
+  id_admin       Int      @id @default(autoincrement())
+  nom_administrateur String   
+  mot_de_passe_admin String   @unique 
+  reservations   Reservation[]
+}
+
+model Client {
+  id_client       Int      @id @default(autoincrement())
+  nom             String   
+  prenom          String?  
+  date_de_naissance DateTime 
+  sexe            String   
+  email           String?  @unique 
+  reservations   Reservation[]
+}
+
+model Reservation {
+  id_reservation_ Int      @id @default(autoincrement())
+  date_et_heure  DateTime 
+  mode_de_paiement String   
+  montant        Float // Utiliser Float pour les devises avec SQLite, mais attention aux limitations
+  statut         String   
+  client         Client   @relation(fields: [id_client], references: [id_client])
+  id_client      Int
+  admin          Admin    @relation(fields: [id_admin], references: [id_admin])
+  id_admin       Int
+  films          Film[]   @relation("Inclure")
+  places         Place[]  @relation("Contenir")
+}
+
+model Place {
+  id_place      Int      @id @default(autoincrement())
+  numero_siege  String   
+  type_de_place String   
+  reservations  Reservation[] @relation("Contenir")
+}
+
+model Film {
+  id_film                  Int      @id @default(autoincrement())
+  titre                    String   
+  date_et_heure_de_la_seance DateTime 
+  salle_de_cinema          String   
+  version_du_film          String   
+  type_de_projection       String   
+  reservations             Reservation[] @relation("Inclure")
+}
